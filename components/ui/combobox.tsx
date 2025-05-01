@@ -45,7 +45,7 @@ const statuses: Status[] = [
   },
 ]
 
-export function ComboboxPopover({label, comboboxLabel, className}:{label:string, comboboxLabel?:string, className?:string}) {
+export function ComboboxPopover({placeholder="Select", className}:{placeholder?:string, className?:string}) {
   const [open, setOpen] = React.useState(false)
   const [selectedStatus, setSelectedStatus] = React.useState<Status | null>(
     null
@@ -53,11 +53,11 @@ export function ComboboxPopover({label, comboboxLabel, className}:{label:string,
 
   return (
     <div className={`flex items-center space-x-4 ${className}`}>
-      <p className="text-sm text-muted-foreground">{label}</p>
+      
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-[150px] justify-start cursor-pointer">
-            {selectedStatus ? <>{selectedStatus.label}</> : <>+ {comboboxLabel}</>}
+            {selectedStatus ? <>{selectedStatus.label}</> : <>+ {placeholder}</>}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0" side="right" align="start">
