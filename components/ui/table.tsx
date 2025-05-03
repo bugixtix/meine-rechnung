@@ -104,16 +104,29 @@ function TableCaption({
   )
 }
 
-function TableEmptyCell({className, fields=7}:{className?:string, fields?:number}){
+function TableEmptyRow({className, fields=7}:{className?:string, fields?:number}){
 
   return(
       <TableRow className={cn("h-[44px]", className)}>
         {
           Array.from({length:fields}).map((_,index)=>(
-            <TableCell key={index}/>
+            <TableCell key={index} />
           ))
         }
       </TableRow>
+  )
+}
+
+function TablePriceRow({txt, val, total,className}:{txt?:string, val?:string, total?:boolean, className?:string}){
+  return(
+  <tr>
+    <td colSpan={7} className={`${total?"bg-muted":"hover:bg-muted"} transition-all duration-200 pl-4 pr-12 py-2 ${className}`}>
+      <div className="flex justify-between">
+        <span>{txt}</span>  
+        <span>{val} €</span>
+      </div>
+    </td>
+  </tr>
   )
 }
 
@@ -126,5 +139,6 @@ export {
   TableRow,
   TableCell,
   TableCaption,
-  TableEmptyCell
+  TableEmptyRow,
+  TablePriceRow
 }

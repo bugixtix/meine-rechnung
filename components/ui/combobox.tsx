@@ -22,6 +22,7 @@ type Status = {
   label: string
 }
 
+
 const statuses: Status[] = [
   {
     value: "backlog",
@@ -45,19 +46,31 @@ const statuses: Status[] = [
   },
 ]
 
-export function ComboboxPopover({placeholder="Select", className}:{placeholder?:string, className?:string}) {
+type comboboxProps = {
+  placeholder?:string,
+  className?:string,
+  handler?:(value:string)=>void,
+  values:{label:string, value:string}[]
+}
+
+export function ComboboxPopover({placeholder="Select", className, handler, values}:comboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [selectedStatus, setSelectedStatus] = React.useState<Status | null>(
     null
   )
-
+  // React.useEffect(() => {
+  //   const val:Status|null = selectedStatus
+  //   if(selectedStatus !== null){
+  //   }
+  // }, [selectedStatus])
+  
   return (
-    <div className={`flex items-center space-x-4 ${className}`}>
+    <div className={`flex items-center space-x-4`}>
       
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="w-[150px] justify-start cursor-pointer">
-            {selectedStatus ? <>{selectedStatus.label}</> : <>+ {placeholder}</>}
+          <Button variant="outline" className={`w-[150px] justify-center cursor-pointer ${className}`}>
+            {selectedStatus ? <>{selectedStatus.label}</> : <> {placeholder}</>}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0" side="right" align="start">
@@ -66,16 +79,17 @@ export function ComboboxPopover({placeholder="Select", className}:{placeholder?:
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup>
-                {statuses.map((status) => (
+                {values.map((status) => (
                   <CommandItem
                     key={status.value}
                     value={status.value}
                     onSelect={(value) => {
                       setSelectedStatus(
-                        statuses.find((priority) => priority.value === value) ||
+                        values.find((priority) => priority.value === value) ||
                           null
                       )
                       setOpen(false)
+                      handler?.(status.value)
                     }}
                   >
                     {status.label}
