@@ -5,13 +5,14 @@ import {useState} from 'react'
 import {Input} from "@/components/ui/input"
 
 const styles = StyleSheet.create({
-    page: { padding: 30 },
-    section: { marginBottom: 10 },
-    label: { fontSize: 12, fontWeight: 'bold' },
+    page: { padding: 60 },
+    section: { marginBottom: 0 },
+    label: { fontSize: 11, fontWeight: 'bold' },
     valueBox: {
-      border: '1pt solid #000',
-      padding: 5,
-      minHeight: 20,
+      // border: '1pt solid #000',
+      padding: 1,
+      fontSize:9,
+      // minHeight: 20,
       marginTop: 2,
     },
   });
@@ -36,11 +37,11 @@ function MyDocument({
     <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
-        <Text style={styles.label}>Name</Text>
+        {/* <Text style={styles.label}>Name</Text> */}
         <View style={styles.valueBox}><Text>{name}</Text></View>
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>Email</Text>
+        {/* <Text style={styles.label}>Email</Text> */}
         <View style={styles.valueBox}><Text>{email}</Text></View>
       </View>
     </Page>

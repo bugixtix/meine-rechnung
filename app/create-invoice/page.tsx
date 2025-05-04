@@ -6,8 +6,6 @@ import {Input} from "@/components/ui/input"
 import {DatePickerWithPresets} from "@/components/ui/datePicker"
 import { Button } from "@/components/ui/button"
 import { IoRemoveSharp as RemoveIcon } from "react-icons/io5";
-
-
 import {
     Table,
     TableBody,
@@ -255,7 +253,6 @@ function page() {
         const vat = 19
         return z*vat/100
     }
-
     function formatPrice(value?: number): string {
         let val =  value?.toFixed(2).replace('.', ',') || "0"
         return val

@@ -20,9 +20,15 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-export function DatePickerWithPresets({label="Pick a date"}:{label?:string}) {
+export function DatePickerWithPresets({label="Pick a date", handler}:{label?:string, handler?:(date:string)=>void}) {
   const [date, setDate] = React.useState<Date>()
 
+  React.useEffect(()=>{
+    if(date){
+      const dateString:string = date?.toString()
+      handler?.(dateString)
+    }
+  },[date])
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -34,12 +40,12 @@ export function DatePickerWithPresets({label="Pick a date"}:{label?:string}) {
           )}
         >
           <CalendarIcon />
-          {date ? format(date, "PPP") : <span>{label}</span>}
+          {date ? format(date, "PPP") : <span className="text-[11px]">{label}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="flex w-auto flex-col space-y-2 p-2"
+        className="flex text-[11px] w-auto flex-col space-y-2 p-2"
       >
         <div className="rounded-md border">
           <Calendar mode="single" selected={date} onSelect={setDate} />
