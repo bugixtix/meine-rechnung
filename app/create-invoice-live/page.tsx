@@ -2,12 +2,13 @@
 
 
 import MyDocument from '@/app/create-invoice-live/document'
-import {pdf} from "@react-pdf/renderer"
-import React, {useState} from 'react'
+import { pdf } from "@react-pdf/renderer"
+import React, { useState } from 'react'
 import Image from 'next/image'
 import Logo from '@/public/Assets/logo.png'
-import {Input} from "@/components/ui/input"
-import {DatePickerWithPresets} from "@/components/ui/datePicker"
+import { Input } from "@/components/ui/input"
+import { ComboboxPopover } from "@/components/ui/combobox"
+import { DatePickerWithPresets } from "@/components/ui/datePicker"
 import { Button } from "@/components/ui/button"
 import { IoRemoveSharp as RemoveIcon } from "react-icons/io5";
 import { IoIosAdd as AddIcon } from "react-icons/io";
@@ -154,11 +155,27 @@ type Prices = {
   net?:Price
   total?:Price
 }
+type ComboboxValues = {
+  label:string
+  value:string
+}
 function page() {
+  const [itemUiTotalPrice, setItemUiTotalPrice] = useState<Price>({text:"0", value:0})
+  const [itemUi, setItemUi] = useState<RowData>({
+    position:0,
+    quantity:0,
+    unit:"",
+    description:"",
+    price:0,
+    totalPrice:0,
+    totalPriceTxt:"0",
+    priceTxt:"0",
+    currency:"€"
+  })
   const [price, setPrice] = useState<Prices>({
-     net:{text:"0", value:0},
-     vat:{text:"19", value:19},
-     total:{text:"", value:0}
+    net:{text:"0", value:0},
+    vat:{text:"19", value:19},
+    total:{text:"", value:0}
   })
   const [rows, setRows] = useState<RowData[]>([])
   const [companyInfoUi, setCompanyInfoUi] = useState<CompanyInfo>({
@@ -215,17 +232,7 @@ function page() {
     tel:"0123456789",
     email:"max.mustermann@muster.de"
   })
-  const [itemUi, setItemUi] = useState<RowData>({
-      position:0,
-      quantity:0,
-      unit:"",
-      description:"",
-      price:0,
-      totalPrice:0,
-      totalPriceTxt:"0",
-      priceTxt:"0",
-      currency:"€"
-  })
+
 
   const changeRecieverUiAddress = (e:React.ChangeEvent<HTMLInputElement>) =>{
     setRecieverUi({...recieverUi, address: e.target.value})
@@ -327,6 +334,32 @@ function page() {
   const changeCompanyInfoUiVatWebsite = (e:React.ChangeEvent<HTMLInputElement>)=>{
     setCompanyInfoUi((prev) =>({...prev, vat:{...prev.vat,website:e.target.value}}))
   }
+  const changeItemUiPosition = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    const nr = Number(e.target.value)
+    setItemUi({...itemUi, position:nr})
+  }
+  const changeItemUiQuantity = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    const nr = Number(e.target.value)
+    setItemUi({...itemUi, quantity:nr})
+  }
+  const changeItemUiUnit = (value?:string)=>{
+    setItemUi({...itemUi, unit:value})
+  }
+  const changeItemUiDescription = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    setItemUi({...itemUi, description:e.target.value})
+  }
+  const changeItemUiPrice = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    const nr = Number(e.target.value)
+    setItemUi({...itemUi, price:nr, priceTxt:e.target.value})
+  }
+  const changeItemUiCurrency = (value?:string)=>{
+    setItemUi({...itemUi, currency:value})
+  }
+  const changeItemUiTotalPrice = ()=>{
+    const nr = calculateItemTotalPrice(itemUi.quantity??0, itemUi?.price??0)
+    const str = nr.toString()
+    setItemUiTotalPrice({text:str, value:nr})
+  }
   const addRow = (newRow:RowData) =>{
     setRows([...rows, newRow])
   }
@@ -364,8 +397,10 @@ function page() {
   return (
     <div className="flex flex-row items-center justify-center">
       <PageUI 
-        price={price}
-        rows={rows}
+        itemUiTotalPriceValue={itemUiTotalPrice}
+        itemUiValue={itemUi}
+        priceValue={price}
+        rowsValue={rows}
         companyInfoUiValue={companyInfoUi}
         invoiceMessageUiValue={invoiceMessageUi}
         invoiceUiValue={invoiceUi}
@@ -409,14 +444,23 @@ function page() {
         changeCompanyInfoUiVatManagingDirector={(e)=>{changeCompanyInfoUiVatManagingDirector(e)}}
         changeCompanyInfoUiVatWebsite={(e)=>{changeCompanyInfoUiVatWebsite(e)}}
 
+        changeItemUiPosition={(e)=>changeItemUiPosition(e)}
+        changeItemUiQuantity={(e)=>changeItemUiQuantity(e)}
+        changeItemUiDescription={(e)=>changeItemUiDescription(e)}
+        changeItemUiUnit={(val)=>changeItemUiUnit(val)}
+        changeItemUiPrice={(e)=>changeItemUiPrice(e)}
+        changeItemUiCurrency={(e)=>changeItemUiCurrency(e)}
+        changeItemUiTotalPrice={()=>changeItemUiTotalPrice()}
         deleteRow={(index:number)=>{deleteRow(index)}}
       />
     </div>
   )
 }
 type PageUIProps = {
-  price:Prices
-  rows:RowData[]
+  itemUiTotalPriceValue:Price
+  itemUiValue:RowData
+  priceValue:Prices
+  rowsValue:RowData[]
   companyInfoUiValue:CompanyInfo
   invoiceMessageUiValue:InvoiceMessage
   invoiceUiValue:InvoiceData
@@ -454,11 +498,20 @@ type PageUIProps = {
   changeCompanyInfoUiVatLocalCourt:(e:React.ChangeEvent<HTMLInputElement>)=>void
   changeCompanyInfoUiVatManagingDirector:(e:React.ChangeEvent<HTMLInputElement>)=>void
   changeCompanyInfoUiVatWebsite:(e:React.ChangeEvent<HTMLInputElement>)=>void
+  changeItemUiPosition:(e:React.ChangeEvent<HTMLInputElement>)=>void
+  changeItemUiQuantity:(e:React.ChangeEvent<HTMLInputElement>)=>void
+  changeItemUiDescription:(e:React.ChangeEvent<HTMLInputElement>)=>void
+  changeItemUiUnit:(val:string)=>void
+  changeItemUiPrice:(e:React.ChangeEvent<HTMLInputElement>)=>void
+  changeItemUiCurrency:(val:string)=>void
+  changeItemUiTotalPrice:()=>void
   deleteRow:(index:number)=>void
 } 
 function PageUI({
-  price,
-  rows,
+  itemUiTotalPriceValue,
+  itemUiValue,
+  priceValue,
+  rowsValue,
   companyInfoUiValue,
   invoiceMessageUiValue,
   invoiceUiValue,
@@ -501,9 +554,29 @@ function PageUI({
   changeCompanyInfoUiVatManagingDirector,
   changeCompanyInfoUiVatWebsite,
 
+  changeItemUiPosition,
+  changeItemUiQuantity,
+  changeItemUiDescription,
+  changeItemUiUnit,
+  changeItemUiPrice,
+  changeItemUiCurrency,
+  changeItemUiTotalPrice,
+
   deleteRow,
 }:PageUIProps){
 
+  const units:ComboboxValues[] = [
+    { label:"Meter", value:"m" },
+    { label:"Kilogramm", value:"kg" },
+    { label:"Stunde", value:"h" },
+    { label:"Stück", value:"Stück" }
+  ]
+  const currencies:ComboboxValues[] = [
+    { label:"€", value:"€" },
+    { label:"$", value:"$" },
+    { label:"¥", value:"¥" },
+    { label:"£", value:"£" }
+  ]
   const obj:Tobj = {
     comboboxPlaceholder:"Auswählen",
 
@@ -572,6 +645,14 @@ function PageUI({
     _100:{w:"595px",h:"842px"},
     _90:{w:"535px", h:"758px"}
   }
+
+  React.useEffect(()=>{
+    if(itemUiValue?.quantity === 0 && itemUiValue.price === 0){
+    // do something
+    }else{
+      changeItemUiTotalPrice?.()
+    }
+  },[itemUiValue])
   return(
     <div className={`w-[535px] h-[758px] border border-black flex flex-col`}>
       {/* Logo Section */}
@@ -636,8 +717,8 @@ function PageUI({
             </TableRow>
         </TableHeader>
         <TableBody>
-                {rows.length !== 0 &&
-                    rows.map((row,index)=>(
+                {rowsValue.length !== 0 &&
+                    rowsValue.map((row,index)=>(
                         <TableRow key={index}>
                             <TableCell className="text-center">
                                 <Button size="icon" className="hover:cursor-pointer" variant="destructive" onClick={()=>deleteRow?.(index)}>
@@ -658,35 +739,36 @@ function PageUI({
                         </TableRow>
                     ))
                 }
+                {/* Empty Row, to Fill and Add by User */}
                 {
                   <TableRow>
-                      <TableCell className="text-center">
+                      <TableCell className="text-center" id="action">
                           <Button size="icon" className="hover:cursor-pointer bg-green-500 hover:bg-green-800 "  >
                               <AddIcon/>
                           </Button>
                       </TableCell>
-                      <TableCell className="text-center">
-                        <Input placeholder="text" className="w-[100%] h-[100%] rounded-none"/>
+                      <TableCell className="text-center" id="position">
+                        <Input placeholder="text" className="w-[100%] h-[100%] rounded-none" value={itemUiValue?.position} onChange={(e)=>changeItemUiPosition(e)}/>
                       </TableCell>
-                      <TableCell className="text-center">
-                        <Input placeholder="text" className="w-[100%] h-[100%] rounded-none"/>
+                      <TableCell className="text-center" id="quantity">
+                        <Input placeholder="text" className="w-[100%] h-[100%] rounded-none" value={itemUiValue?.quantity} onChange={(e)=>changeItemUiQuantity(e)}/>
                       </TableCell>
-                      <TableCell className="text-center">
-                        <Input placeholder="text" className="w-[100%] h-[100%] rounded-none"/>
+                      <TableCell className="text-center" id="unit">
+                        <ComboboxPopover placeholder={obj.itemUnitLabel} className="w-[60px]" handler={(value)=>{changeItemUiUnit(value)}} values={units}  />
                       </TableCell>
-                      <TableCell className="max-w-[30%] sm:max-w-[600px] whitespace-pre-wrap overflow-y-auto break-words">
-                        <Input placeholder="text" className="w-[100%] h-[100%] rounded-none"/>
+                      <TableCell className="max-w-[30%] sm:max-w-[600px] whitespace-pre-wrap overflow-y-auto break-words" id="description">
+                        <Input placeholder="text" className="w-[100%] h-[100%] rounded-none" value={itemUiValue?.description} onChange={(e)=>changeItemUiDescription(e)} />
                       </TableCell>
-                      <TableCell className="text-center">
+                      <TableCell className="text-center" id="price">
                         <div className="flex flex-row">
-                          <Input placeholder="text" className="w-[60%] h-[100%] rounded-none px-1"/>
-                          <Input placeholder="text" className="w-[40%] h-[100%] rounded-none px-1"/>
+                          <Input placeholder="text" className="w-[60%] h-[100%] rounded-none px-1" value={itemUiValue?.priceTxt} onChange={(e)=>changeItemUiPrice(e)}/>
+                          <ComboboxPopover placeholder={obj.itemCurrencyLabel} className="w-[60px]" handler={(value)=>{changeItemUiCurrency(value)}} values={currencies}  />
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell id="totalPrice">
                         <div className="flex flex-row">
-                          <Input placeholder="text" className="w-[60%] h-[100%] rounded-none px-1"/>
-                          <Input placeholder="text" className="w-[40%] h-[100%] rounded-none px-1"/> 
+                          <Input placeholder="text" className="w-[60%] h-[100%] rounded-none px-1" value={itemUiTotalPriceValue?.text} onChange={()=>{}} />
+                          <ComboboxPopover placeholder={obj.itemCurrencyLabel} className="w-[60px]" handler={(value)=>{changeItemUiCurrency(value)}} values={currencies} />
                         </div>
                       </TableCell>
                   </TableRow> 
@@ -694,9 +776,9 @@ function PageUI({
                 {/* <TableEmptyRow/> */}
                 <TableEmptyRow/>
 
-                <TablePriceRow txt={obj.tableRowNetPriceLabel} val={price?.net?.text} className="border-b"/>
-                <TablePriceRow txt={obj.tableRowVATlabel} val={price?.vat?.text}/>
-                <TablePriceRow txt={obj.tableRowTotalPriceLabel} val={price?.total?.text} total={true}/>
+                <TablePriceRow txt={obj.tableRowNetPriceLabel} val={priceValue?.net?.text} className="border-b"/>
+                <TablePriceRow txt={obj.tableRowVATlabel} val={priceValue?.vat?.text}/>
+                <TablePriceRow txt={obj.tableRowTotalPriceLabel} val={priceValue?.total?.text} total={true}/>
           </TableBody>
       </Table>
       </div>
