@@ -12,6 +12,7 @@ import { DatePickerWithPresets } from "@/components/ui/datePicker"
 import { Button } from "@/components/ui/button"
 import { IoRemoveSharp as RemoveIcon } from "react-icons/io5";
 import { IoIosAdd as AddIcon } from "react-icons/io";
+import { SlCalender as CalendarIcon} from "react-icons/sl";
 
 import {
     Table,
@@ -362,6 +363,11 @@ function page() {
   }
   const addRow = (newRow:RowData) =>{
     setRows([...rows, newRow])
+    const newPos = (itemUi?.position ?? 0) + 1
+    const newCur = itemUi?.currency
+    const newUnit = itemUi?.unit
+    setItemUiTotalPrice({text:"0", value:0})
+    setItemUi({position:newPos, currency:newCur, unit:newUnit, quantity:0, price:0, priceTxt:"0", description:"0",totalPrice:0, totalPriceTxt:"0"})
   }
   const deleteRow = (index:number) =>{
     setRows(rows.filter((_, i)=> i!==index))
@@ -452,6 +458,7 @@ function page() {
         changeItemUiCurrency={(e)=>changeItemUiCurrency(e)}
         changeItemUiTotalPrice={()=>changeItemUiTotalPrice()}
         deleteRow={(index:number)=>{deleteRow(index)}}
+        addRow={(val:RowData)=>{addRow(val)}}
       />
     </div>
   )
@@ -506,6 +513,7 @@ type PageUIProps = {
   changeItemUiCurrency:(val:string)=>void
   changeItemUiTotalPrice:()=>void
   deleteRow:(index:number)=>void
+  addRow:(val:RowData)=>void
 } 
 function PageUI({
   itemUiTotalPriceValue,
@@ -563,6 +571,7 @@ function PageUI({
   changeItemUiTotalPrice,
 
   deleteRow,
+  addRow,
 }:PageUIProps){
 
   const units:ComboboxValues[] = [
@@ -646,6 +655,13 @@ function PageUI({
     _90:{w:"535px", h:"758px"}
   }
 
+  const AddRow = ():void=>{
+    let {text,value} = itemUiTotalPriceValue ?? {text:"0",value:0}
+    let item:RowData = itemUiValue
+    item={...item, totalPriceTxt:text, totalPrice:value}
+    addRow?.(item)
+  }
+
   React.useEffect(()=>{
     if(itemUiValue?.quantity === 0 && itemUiValue.price === 0){
     // do something
@@ -660,30 +676,40 @@ function PageUI({
         <Image src={Logo} alt="Logo" />
       </div>
       {/* Reciever Section */}
-      <div>
+      <div className={"flex flex-col gap-0.5"}>
         <div>
-          <Input type={"text"} placeholder={recieverUiValue?.address} className={"w-[300px]"} onChange={(e)=>{changeRecieverUiAddress?.(e)}} value={recieverUiValue?.address}/>
+          <Input type={"text"} placeholder={recieverUiValue?.address} className={"w-[260px] text-gray-500"} onChange={(e)=>{changeRecieverUiAddress?.(e)}} value={recieverUiValue?.address}/>
         </div>
         <div>
-        <Input type={"text"} placeholder={recieverUiValue?.company} className={"w-[300px]"} onChange={(e)=>{changeRecieverUiCompany?.(e)}} value={recieverUiValue?.company}/>
-        <Input type={"text"} placeholder={recieverUiValue?.street} className={"w-[300px]"} onChange={(e)=>{changeRecieverUiStreet?.(e)}} value={recieverUiValue?.street}/>
-        <Input type={"text"} placeholder={recieverUiValue?.houseNumberTxt} className={"w-[300px]"} onChange={(e)=>{changeRecieverUiHouseNumber?.(e)}} value={recieverUiValue?.houseNumberTxt}/>
-        <Input type={"text"} placeholder={recieverUiValue?.zipCodeTxt} className={"w-[300px]"} onChange={(e)=>{changeRecieverUiZipCode?.(e)}} value={recieverUiValue?.zipCodeTxt}/>
-        <Input type={"text"} placeholder={recieverUiValue?.place} className={"w-[300px]"} onChange={(e)=>{changeRecieverUiPlace?.(e)}} value={recieverUiValue?.place}/>
+        <Input type={"text"} placeholder={recieverUiValue?.company} className={"w-[183px]"} onChange={(e)=>{changeRecieverUiCompany?.(e)}} value={recieverUiValue?.company}/>
+        </div>
+        <div className="flex flex-row gap-0.5">
+          <Input type={"text"} placeholder={recieverUiValue?.street} className={"w-[120px]"} onChange={(e)=>{changeRecieverUiStreet?.(e)}} value={recieverUiValue?.street}/>
+          <Input type={"text"} placeholder={recieverUiValue?.houseNumberTxt} className={"w-[60px]"} onChange={(e)=>{changeRecieverUiHouseNumber?.(e)}} value={recieverUiValue?.houseNumberTxt}/>
+        </div>
+        <div className="flex flex-row gap-0.5">
+          <Input type={"text"} placeholder={recieverUiValue?.zipCodeTxt} className={"w-[60px]"} onChange={(e)=>{changeRecieverUiZipCode?.(e)}} value={recieverUiValue?.zipCodeTxt}/>
+          <Input type={"text"} placeholder={recieverUiValue?.place} className={"w-[120px]"} onChange={(e)=>{changeRecieverUiPlace?.(e)}} value={recieverUiValue?.place}/>
         </div>
       </div>
       {/* Sender Section */}
-      <div>
-      <Input type={"text"} placeholder={senderUiValue?.company} className={"w-[300px]"} onChange={(e)=>{changeSenderUiCompany?.(e)}} value={senderUiValue?.company}/>
-      <Input type={"text"} placeholder={senderUiValue?.street} className={"w-[300px]"} onChange={(e)=>{changeSenderUiStreet?.(e)}} value={senderUiValue?.street}/>
-      <Input type={"text"} placeholder={senderUiValue?.houseNumberTxt} className={"w-[300px]"} onChange={(e)=>{changeSenderUiHouseNumber?.(e)}} value={senderUiValue?.houseNumberTxt}/>
-      <Input type={"text"} placeholder={senderUiValue?.zipCodeTxt} className={"w-[300px]"} onChange={(e)=>{changeSenderUiZipCode?.(e)}} value={senderUiValue?.zipCodeTxt}/>
-      <Input type={"text"} placeholder={senderUiValue?.place} className={"w-[300px]"} onChange={(e)=>{changeSenderUiPlace?.(e)}} value={senderUiValue?.place}/>
+      <div className="flex flex-col w-[100%] items-end gap-0.5">
+        <div>
+          <Input type={"text"} placeholder={senderUiValue?.company} className={"w-[183px] text-right"} onChange={(e)=>{changeSenderUiCompany?.(e)}} value={senderUiValue?.company}/>
+        </div>
+      <div className="flex flex-row justify-end gap-0.5">
+        <Input type={"text"} placeholder={senderUiValue?.street} className={"w-[120px] text-right"} onChange={(e)=>{changeSenderUiStreet?.(e)}} value={senderUiValue?.street}/>
+        <Input type={"text"} placeholder={senderUiValue?.houseNumberTxt} className={"w-[60px] text-right"} onChange={(e)=>{changeSenderUiHouseNumber?.(e)}} value={senderUiValue?.houseNumberTxt}/>
+      </div>
+      <div className="flex flex-row justify-end gap-0.5">
+        <Input type={"text"} placeholder={senderUiValue?.zipCodeTxt} className={"w-[60px] text-right"} onChange={(e)=>{changeSenderUiZipCode?.(e)}} value={senderUiValue?.zipCodeTxt}/>
+        <Input type={"text"} placeholder={senderUiValue?.place} className={"w-[120px] text-right"} onChange={(e)=>{changeSenderUiPlace?.(e)}} value={senderUiValue?.place}/>
+      </div>
       </div>
       {/* Invoice Number Section */}
-      <div>
-        <div>
-          <p className="text-[11px]">{obj.invoiceDateLabel}</p>
+      <div className="flex flex-col items-end py-4">
+        <div className="flex flex-row gap-0.5 items-center">
+          <p className="text-[11px]">{obj.invoiceDate2Label}</p>
           <DatePickerWithPresets handler={(val:string)=>{changeInvoiceUiDate(val)}} label={obj.invoiceDateLabel}/>
         </div>
         <div>
@@ -725,17 +751,14 @@ function PageUI({
                                     <RemoveIcon/>
                                 </Button>
                             </TableCell>
-                            <TableCell className="text-center">
-                              
-                              {/* {row.position} */}
-                            </TableCell>
-                            <TableCell className="text-center">{row.quantity}</TableCell>
-                            <TableCell className="text-center">{row.unit}</TableCell>
+                            <TableCell className="text-center">{row?.position}</TableCell>
+                            <TableCell className="text-center">{row?.quantity}</TableCell>
+                            <TableCell className="text-center">{row?.unit}</TableCell>
                             <TableCell className="max-w-[30%] sm:max-w-[600px] whitespace-pre-wrap overflow-y-auto break-words">
-                            {row.description}
+                            {row?.description}
                             </TableCell>
-                            <TableCell className="text-center">{row.priceTxt} {row?.currency}</TableCell>
-                            <TableCell className="text-right pr-12">{row.totalPriceTxt} {row?.currency}</TableCell>
+                            <TableCell className="text-center">{row?.priceTxt} {row?.currency}</TableCell>
+                            <TableCell className="text-right pr-12">{row?.totalPriceTxt} {row?.currency}</TableCell>
                         </TableRow>
                     ))
                 }
@@ -743,7 +766,7 @@ function PageUI({
                 {
                   <TableRow>
                       <TableCell className="text-center" id="action">
-                          <Button size="icon" className="hover:cursor-pointer bg-green-500 hover:bg-green-800 "  >
+                          <Button size="icon" className="hover:cursor-pointer bg-green-500 hover:bg-green-800 " onClick={()=>{AddRow()}}  >
                               <AddIcon/>
                           </Button>
                       </TableCell>

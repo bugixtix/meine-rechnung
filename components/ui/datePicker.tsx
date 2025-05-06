@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import { addDays, format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
+// import { CalendarIcon } from "lucide-react"
+import { SlCalender as CalendarIcon} from "react-icons/sl";
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -31,23 +32,26 @@ export function DatePickerWithPresets({label="Pick a date", handler}:{label?:str
   },[date])
   return (
     <Popover>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild className="px-1! py-2! gap-0.5 m-0 rounded-xs h-4">
         <Button
           variant={"outline"}
           className={cn(
-            "w-[240px] justify-start text-left font-normal cursor-pointer",
+            "w-[120px] p-0 justify-start text-left font-normal cursor-pointer",
             !date && "text-muted-foreground"
           )}
         >
-          <CalendarIcon />
+
           {date ? format(date, "PPP") : <span className="text-[11px]">{label}</span>}
+          <p className="text-2xl">
+            <CalendarIcon className="w-[12px]! h-[12px]!" />
+          </p>
         </Button>
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="flex text-[11px] w-auto flex-col space-y-2 p-2"
+        className="flex text-[11px] w-auto flex-col "
       >
-        <div className="rounded-md border">
+        <div className="rounded-[2px] border">
           <Calendar mode="single" selected={date} onSelect={setDate} />
         </div>
       </PopoverContent>
