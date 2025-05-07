@@ -57,7 +57,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
+        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors h-6!",
         className
       )}
       {...props}
@@ -70,7 +70,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-pre-wrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "text-foreground h-6 px-2 text-left align-middle font-medium whitespace-pre-wrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className
       )}
       {...props}
@@ -83,7 +83,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
     <td
       data-slot="table-cell"
       className={cn(
-        "p-2 align-middle whitespace-pre-wrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "px-1 align-middle whitespace-pre-wrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className
       )}
       {...props}
@@ -107,7 +107,7 @@ function TableCaption({
 function TableEmptyRow({className, fields=7}:{className?:string, fields?:number}){
 
   return(
-      <TableRow className={cn("h-[44px]", className)}>
+      <TableRow className={cn("h-8", className)}>
         {
           Array.from({length:fields}).map((_,index)=>(
             <TableCell key={index} />
@@ -120,7 +120,7 @@ function TableEmptyRow({className, fields=7}:{className?:string, fields?:number}
 function TablePriceRow({txt, val, total,className}:{txt?:string, val?:string, total?:boolean, className?:string}){
   return(
   <tr>
-    <td colSpan={7} className={`${total?"bg-muted":"hover:bg-muted"} transition-all duration-200 pl-4 pr-12 py-2 ${className}`}>
+    <td colSpan={7} className={`${total?"bg-muted":"hover:bg-muted"} transition-all duration-200 pl-4 pr-12 h-6 ${className}`}>
       <div className="flex justify-between">
         <span>{txt}</span>  
         <span>{val} €</span>

@@ -36,7 +36,7 @@ export function DatePickerWithPresets({label="Pick a date", handler}:{label?:str
         <Button
           variant={"outline"}
           className={cn(
-            "w-[120px] p-0 justify-start text-left font-normal cursor-pointer",
+            "text-[11px] w-[140px] p-0 justify-start text-left font-normal cursor-pointer",
             !date && "text-muted-foreground"
           )}
         >

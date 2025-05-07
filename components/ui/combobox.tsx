@@ -65,11 +65,11 @@ export function ComboboxPopover({placeholder="Select", className, handler, value
   // }, [selectedStatus])
   
   return (
-    <div className={`flex items-center space-x-4`}>
+    <div className={`flex items-center space-x-1`}>
       
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className={`w-[150px] justify-center cursor-pointer ${className}`}>
+        <PopoverTrigger asChild className="p-0! gap-0! h-[26px] rounded-xs w-[auto]">
+          <Button variant="outline" className={`w-[150px] justify-center cursor-pointer text-[11px] ${className}`}>
             {selectedStatus ? <>{selectedStatus.label}</> : <> {placeholder}</>}
           </Button>
         </PopoverTrigger>

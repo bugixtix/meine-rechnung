@@ -91,7 +91,15 @@ type Tobj = {
   tableRowVATlabel:string,
   tableRowTotalPriceLabel:string,
 
+  bankDetailsCreditInstitution:string,
+  bankDetailsIban:string,
+  bankDetailsBic:string,
+  bankDetailsAccountHolder:string,
 
+  bankDetailsVatId:string,
+  bankDetailsCourt:string,
+  bankDetailsManagingDirector:string,
+  bankDetailsWebsite:string
 }
 type RowData = {
   position?:number,
@@ -290,10 +298,10 @@ function page() {
   const changeInvoiceMessageUiSalutation = (e:React.ChangeEvent<HTMLInputElement>)=>{
     setInvoiceMessageUi({...invoiceMessageUi, salutation:e.target.value})
   }
-  const changeInvoiceMessageUiFirstSection = (e:React.ChangeEvent<HTMLInputElement>)=>{
+  const changeInvoiceMessageUiFirstSection = (e:React.ChangeEvent<HTMLTextAreaElement>)=>{
     setInvoiceMessageUi({...invoiceMessageUi, firstSection:e.target.value})
   }
-  const changeInvoiceMessageUiSecondSection = (e:React.ChangeEvent<HTMLInputElement>)=>{
+  const changeInvoiceMessageUiSecondSection = (e:React.ChangeEvent<HTMLTextAreaElement>)=>{
     setInvoiceMessageUi({...invoiceMessageUi, secondSection:e.target.value})
   }
   const changeInvoiceMessageUiThirdSection = (e:React.ChangeEvent<HTMLInputElement>)=>{
@@ -490,8 +498,8 @@ type PageUIProps = {
   changeInvoiceUiID:(e:React.ChangeEvent<HTMLInputElement>)=>void
   changeInvoiceUiDateNote:(e:React.ChangeEvent<HTMLInputElement>)=>void
   changeInvoiceMessageUiSalutation:(e:React.ChangeEvent<HTMLInputElement>)=>void
-  changeInvoiceMessageUiFirstSection:(e:React.ChangeEvent<HTMLInputElement>)=>void
-  changeInvoiceMessageUiSecondSection:(e:React.ChangeEvent<HTMLInputElement>)=>void
+  changeInvoiceMessageUiFirstSection:(e:React.ChangeEvent<HTMLTextAreaElement>)=>void
+  changeInvoiceMessageUiSecondSection:(e:React.ChangeEvent<HTMLTextAreaElement>)=>void
   changeInvoiceMessageUiThirdSection:(e:React.ChangeEvent<HTMLInputElement>)=>void
   changeInvoiceMessageUiClosing:(e:React.ChangeEvent<HTMLInputElement>)=>void
   changeInvoiceMessageUiSignOff:(e:React.ChangeEvent<HTMLInputElement>)=>void
@@ -648,7 +656,18 @@ function PageUI({
 
     tableRowNetPriceLabel:"Nettopreis",
     tableRowVATlabel:"Zzgl. 19% USt.",
-    tableRowTotalPriceLabel:"Rechnungsbetrag"
+    tableRowTotalPriceLabel:"Rechnungsbetrag",
+
+    bankDetailsCreditInstitution:"Kreditinstitution:",
+    bankDetailsIban:"IBAN:",
+    bankDetailsBic:"BIC:",
+    bankDetailsAccountHolder:"Kto. Inh.:",
+
+    bankDetailsVatId:"UST-ID:",
+    bankDetailsCourt:"Amtsgericht:",
+    bankDetailsManagingDirector:"Geschäftsführer:",
+    bankDetailsWebsite:"Webseite:"
+
 }
   const A4Size = {
     _100:{w:"595px",h:"842px"},
@@ -707,30 +726,31 @@ function PageUI({
       </div>
       </div>
       {/* Invoice Number Section */}
-      <div className="flex flex-col items-end py-4">
+      <div className="flex flex-col items-end pt-4 gap-0.5">
         <div className="flex flex-row gap-0.5 items-center">
           <p className="text-[11px]">{obj.invoiceDate2Label}</p>
           <DatePickerWithPresets handler={(val:string)=>{changeInvoiceUiDate(val)}} label={obj.invoiceDateLabel}/>
         </div>
-        <div>
+        <div className="flex flex-row gap-0.5">
           <p className="text-[11px]">{obj.invoiceIDlabel}</p>
-          <Input type={"text"} placeholder={obj.invoiceIDlabel} className={"w-[300px]"} onChange={(e)=>{changeInvoiceUiID?.(e)}} value={invoiceUiValue?.idTxt}/>
+          <Input type={"text"} placeholder={obj.invoiceIDlabel} className={"w-[120px] text-right"} onChange={(e)=>{changeInvoiceUiID?.(e)}} value={invoiceUiValue?.idTxt}/>
         </div>
         <div>
-          <Input type={"text"} placeholder={obj.invoiceDateNote} className={"w-[300px]"} onChange={(e)=>{changeInvoiceUiDateNote?.(e)}} value={invoiceUiValue?.dateNote}/>
+          <Input type={"text"} placeholder={obj.invoiceDateNote} className={"w-[220px] text-[9px]"} onChange={(e)=>{changeInvoiceUiDateNote?.(e)}} value={invoiceUiValue?.dateNote}/>
         </div>
       </div>
 
       {/* Invoice Message First Part Section  */}
-      <div>
-        <h3>{obj.invoiceHeader}</h3>
-        <Input type={"text"} placeholder={obj.invoiceMessage.salutation} className={"w-[300px]"} onChange={(e)=>{changeInvoiceMessageUiSalutation?.(e)}} value={invoiceMessageUiValue?.salutation}/>  
-        <Input type={"text"} placeholder={obj.invoiceMessage.firstSection} className={"w-[300px]"} onChange={(e)=>{changeInvoiceMessageUiFirstSection?.(e)}} value={invoiceMessageUiValue?.firstSection}/>
+      <div className="py-0.5 flex flex-col gap-1">
+        <h3 className="text-[22px]/tight pb-0">{obj.invoiceHeader}</h3>
+        <Input type={"text"} placeholder={obj.invoiceMessage.salutation} className={"w-[100%]"} onChange={(e)=>{changeInvoiceMessageUiSalutation?.(e)}} value={invoiceMessageUiValue?.salutation}/>  
+        <textarea  placeholder={obj.invoiceMessage.firstSection} className={"w-[100%] text-[11px] px-1 border-2 border-gray-200"} onChange={(e)=>{changeInvoiceMessageUiFirstSection?.(e)}} value={invoiceMessageUiValue?.firstSection} name="Text1" rows={2}></textarea>
+        {/* <Input type={"text"} placeholder={obj.invoiceMessage.firstSection} className={"w-[100%] h-8 flex flex-row items-start justify-start"} onChange={(e)=>{changeInvoiceMessageUiFirstSection?.(e)}} value={invoiceMessageUiValue?.firstSection}/> */}
       </div>
       {/* Items Table Section */}
       <div>
-      <Table>
-        <TableCaption>{obj.tableCaptionLabel}</TableCaption>
+      <Table className="text-[11px]">
+        {/* <TableCaption>{obj.tableCaptionLabel}</TableCaption> */}
         <TableHeader>
             <TableRow>
             <TableHead className="text-center">{obj.tableHeadRemoveLabel}</TableHead>
@@ -747,8 +767,8 @@ function PageUI({
                     rowsValue.map((row,index)=>(
                         <TableRow key={index}>
                             <TableCell className="text-center">
-                                <Button size="icon" className="hover:cursor-pointer" variant="destructive" onClick={()=>deleteRow?.(index)}>
-                                    <RemoveIcon/>
+                                <Button size="icon" className="flex flex-col items-center justify-center hover:cursor-pointer text-[11px] w-[100%] h-[100%]" variant="destructive" onClick={()=>deleteRow?.(index)}>
+                                    <RemoveIcon className="text-[11px] w-[100%]! h-[100%]!"/>
                                 </Button>
                             </TableCell>
                             <TableCell className="text-center">{row?.position}</TableCell>
@@ -757,7 +777,7 @@ function PageUI({
                             <TableCell className="max-w-[30%] sm:max-w-[600px] whitespace-pre-wrap overflow-y-auto break-words">
                             {row?.description}
                             </TableCell>
-                            <TableCell className="text-center">{row?.priceTxt} {row?.currency}</TableCell>
+                            <TableCell className="text-right">{row?.priceTxt} {row?.currency}</TableCell>
                             <TableCell className="text-right pr-12">{row?.totalPriceTxt} {row?.currency}</TableCell>
                         </TableRow>
                     ))
@@ -766,32 +786,32 @@ function PageUI({
                 {
                   <TableRow>
                       <TableCell className="text-center" id="action">
-                          <Button size="icon" className="hover:cursor-pointer bg-green-500 hover:bg-green-800 " onClick={()=>{AddRow()}}  >
-                              <AddIcon/>
+                          <Button size="icon" className="flex flex-col items-center justify-center hover:cursor-pointer bg-green-500 hover:bg-green-800 text-[11px] w-[100%] h-[100%]" onClick={()=>{AddRow()}}  >
+                              <AddIcon className="text-[11px] w-[100%]! h-[100%]!"/>
                           </Button>
                       </TableCell>
                       <TableCell className="text-center" id="position">
-                        <Input placeholder="text" className="w-[100%] h-[100%] rounded-none" value={itemUiValue?.position} onChange={(e)=>changeItemUiPosition(e)}/>
+                        <Input placeholder="text" className="w-[100%]! h-[100%] rounded-xs text-center" value={itemUiValue?.position} onChange={(e)=>changeItemUiPosition(e)}/>
                       </TableCell>
                       <TableCell className="text-center" id="quantity">
-                        <Input placeholder="text" className="w-[100%] h-[100%] rounded-none" value={itemUiValue?.quantity} onChange={(e)=>changeItemUiQuantity(e)}/>
+                        <Input placeholder="text" className="w-[100%] h-[100%] rounded-xs text-center" value={itemUiValue?.quantity} onChange={(e)=>changeItemUiQuantity(e)}/>
                       </TableCell>
                       <TableCell className="text-center" id="unit">
                         <ComboboxPopover placeholder={obj.itemUnitLabel} className="w-[60px]" handler={(value)=>{changeItemUiUnit(value)}} values={units}  />
                       </TableCell>
-                      <TableCell className="max-w-[30%] sm:max-w-[600px] whitespace-pre-wrap overflow-y-auto break-words" id="description">
+                      <TableCell className="" id="description">
                         <Input placeholder="text" className="w-[100%] h-[100%] rounded-none" value={itemUiValue?.description} onChange={(e)=>changeItemUiDescription(e)} />
                       </TableCell>
                       <TableCell className="text-center" id="price">
-                        <div className="flex flex-row">
-                          <Input placeholder="text" className="w-[60%] h-[100%] rounded-none px-1" value={itemUiValue?.priceTxt} onChange={(e)=>changeItemUiPrice(e)}/>
-                          <ComboboxPopover placeholder={obj.itemCurrencyLabel} className="w-[60px]" handler={(value)=>{changeItemUiCurrency(value)}} values={currencies}  />
+                        <div className="flex flex-row gap-0.5 w-[100%]">
+                          <Input placeholder="text" className="w-[100%] h-[100%] rounded-none px-1" value={itemUiValue?.priceTxt} onChange={(e)=>changeItemUiPrice(e)}/>
+                          <ComboboxPopover placeholder={obj.itemCurrencyLabel} className="w-[20px]" handler={(value)=>{changeItemUiCurrency(value)}} values={currencies}  />
                         </div>
                       </TableCell>
                       <TableCell id="totalPrice">
-                        <div className="flex flex-row">
-                          <Input placeholder="text" className="w-[60%] h-[100%] rounded-none px-1" value={itemUiTotalPriceValue?.text} onChange={()=>{}} />
-                          <ComboboxPopover placeholder={obj.itemCurrencyLabel} className="w-[60px]" handler={(value)=>{changeItemUiCurrency(value)}} values={currencies} />
+                        <div className="flex flex-row gap-0.5">
+                          <Input placeholder="text" className="w-[40px] h-[100%] rounded-none px-1" value={itemUiTotalPriceValue?.text} onChange={()=>{}} />
+                          <ComboboxPopover placeholder={obj.itemCurrencyLabel} className="w-[20px]" handler={(value)=>{changeItemUiCurrency(value)}} values={currencies} />
                         </div>
                       </TableCell>
                   </TableRow> 
@@ -806,37 +826,74 @@ function PageUI({
       </Table>
       </div>
       {/* Invoice Message Second Part Section */}
-      <div>
-        <Input type={"text"} placeholder={obj.invoiceMessage.secondSection} className={"w-[300px]"} onChange={(e)=>{changeInvoiceMessageUiSecondSection?.(e)}} value={invoiceMessageUiValue?.secondSection}/>  
-        <Input type={"text"} placeholder={obj.invoiceMessage.thirdSection} className={"w-[300px]"} onChange={(e)=>{changeInvoiceMessageUiThirdSection?.(e)}} value={invoiceMessageUiValue?.thirdSection}/>
-        <Input type={"text"} placeholder={obj.invoiceMessage.closing} className={"w-[300px]"} onChange={(e)=>{changeInvoiceMessageUiClosing?.(e)}} value={invoiceMessageUiValue?.closing}/>  
-        <Input type={"text"} placeholder={obj.invoiceMessage.signOff} className={"w-[300px]"} onChange={(e)=>{changeInvoiceMessageUiSignOff?.(e)}} value={invoiceMessageUiValue?.signOff}/>
+      <div className="flex flex-col gap-0.5 pt-1">
+        {/* <Input type={"text"} placeholder={obj.invoiceMessage.secondSection} className={"w-[300px]"} onChange={(e)=>{changeInvoiceMessageUiSecondSection?.(e)}} value={invoiceMessageUiValue?.secondSection}/>   */}
+        <textarea  placeholder={obj.invoiceMessage.secondSection} className={"w-[100%] text-[11px] px-1 border-2 border-gray-200"} onChange={(e)=>{changeInvoiceMessageUiSecondSection?.(e)}} value={invoiceMessageUiValue?.secondSection} name="Text2" rows={2}></textarea>
+        <Input type={"text"} placeholder={obj.invoiceMessage.thirdSection} className={"w-[100%]"} onChange={(e)=>{changeInvoiceMessageUiThirdSection?.(e)}} value={invoiceMessageUiValue?.thirdSection}/>
+        <Input type={"text"} placeholder={obj.invoiceMessage.closing} className={"w-[100%]"} onChange={(e)=>{changeInvoiceMessageUiClosing?.(e)}} value={invoiceMessageUiValue?.closing}/>  
+        <Input type={"text"} placeholder={obj.invoiceMessage.signOff} className={"w-[100%]"} onChange={(e)=>{changeInvoiceMessageUiSignOff?.(e)}} value={invoiceMessageUiValue?.signOff}/>
       </div>
       {/* Bank Account Details Section */}
-      <div className="flex flex-row">
-        <div>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeSenderUiCompany?.(e)}} value={senderUiValue?.company}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeSenderUiStreet?.(e)}} value={senderUiValue?.street}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeSenderUiHouseNumber?.(e)}} value={senderUiValue?.houseNumberTxt}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeSenderUiZipCode?.(e)}} value={senderUiValue?.zipCodeTxt}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeSenderUiPlace?.(e)}} value={senderUiValue?.place}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeSenderUiTel?.(e)}} value={senderUiValue?.tel}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeSenderUiEmail?.(e)}} value={senderUiValue?.email}/>
+      <div className="flex flex-row w-[100%] items-stretch justify-between">
+        <div className="flex flex-col gap-0.5">
+          <div className="text-[9px]">
+            <Input type={"text"} className={"w-[140px] text-[9px]"} onChange={(e)=>{changeSenderUiCompany?.(e)}} value={senderUiValue?.company}/>
+          </div>
+          <div className="flex flex-row gap-0.5">
+            <Input type={"text"} className={"w-[120px] text-[9px]"} onChange={(e)=>{changeSenderUiStreet?.(e)}} value={senderUiValue?.street}/>
+            <Input type={"text"} className={"w-[20px] text-[9px]"} onChange={(e)=>{changeSenderUiHouseNumber?.(e)}} value={senderUiValue?.houseNumberTxt}/>
+          </div>
+          <div className="flex flex-row gap-0.5">
+            <Input type={"text"} className={"w-[40px] text-[9px]"} onChange={(e)=>{changeSenderUiZipCode?.(e)}} value={senderUiValue?.zipCodeTxt}/>
+            <Input type={"text"} className={"w-[100px] text-[9px]"} onChange={(e)=>{changeSenderUiPlace?.(e)}} value={senderUiValue?.place}/>
+          </div>
+          <div>
+            <Input type={"text"} className={"w-[140px] text-[9px]"} onChange={(e)=>{changeSenderUiTel?.(e)}} value={senderUiValue?.tel}/>
+          </div>
+          <div>
+            <Input type={"text"} className={"w-[140px] text-[9px]"} onChange={(e)=>{changeSenderUiEmail?.(e)}} value={senderUiValue?.email}/>
+          </div>
         </div>
 
-        <div>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeCompanyInfoUiBankName?.(e)}} value={companyInfoUiValue?.bank?.name}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeCompanyInfoUiBankIban?.(e)}} value={companyInfoUiValue?.bank?.iban}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeCompanyInfoUiBankBic?.(e)}} value={companyInfoUiValue?.bank?.bic}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeCompanyInfoUiBankAccountHolder?.(e)}} value={companyInfoUiValue?.bank?.accountHolder}/>
+        <div className="flex flex-col gap-0.5">
+          <div className="flex flex-row gap-0.5 items-center justify-between w-[180px]">
+            <p className="text-[9px]">{obj.bankDetailsCreditInstitution}</p>
+            <Input type={"text"} className={"text-[9px]"} onChange={(e)=>{changeCompanyInfoUiBankName?.(e)}} value={companyInfoUiValue?.bank?.name}/>
+          </div>
+          <div className="flex flex-row gap-0.5 items-center justify-between w-[180px]">
+            <p className="text-[9px]">{obj.bankDetailsIban}</p>
+            <Input type={"text"} className={"text-[9px]"} onChange={(e)=>{changeCompanyInfoUiBankIban?.(e)}} value={companyInfoUiValue?.bank?.iban}/>
+          </div>
+          <div className="flex flex-row gap-0.5 items-center justify-between w-[180px]">
+            <p className="text-[9px]">{obj.bankDetailsBic}</p>
+            <Input type={"text"} className={"text-[9px]"} onChange={(e)=>{changeCompanyInfoUiBankBic?.(e)}} value={companyInfoUiValue?.bank?.bic}/>
+          </div>
+          <div className="flex flex-row gap-0.5 items-center justify-between w-[180px]">
+            <p className="text-[9px] w-[50px]">{obj.bankDetailsAccountHolder}</p>
+            <Input type={"text"} className={"text-[9px]"} onChange={(e)=>{changeCompanyInfoUiBankAccountHolder?.(e)}} value={companyInfoUiValue?.bank?.accountHolder}/>
+          </div>
         </div>
-        <div>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeCompanyInfoUiVatIdTxt?.(e)}} value={companyInfoUiValue?.vat?.idTxt}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeCompanyInfoUiVatCommercialRegister?.(e)}} value={companyInfoUiValue?.vat?.commercialRegister}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeCompanyInfoUiVatCommercialRegisterID?.(e)}} value={companyInfoUiValue?.vat?.commercialRegisterID}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeCompanyInfoUiVatLocalCourt?.(e)}} value={companyInfoUiValue?.vat?.localCourt}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeCompanyInfoUiVatManagingDirector?.(e)}} value={companyInfoUiValue?.vat?.managingDirector}/>
-        <Input type={"text"} className={"w-[300px]"} onChange={(e)=>{changeCompanyInfoUiVatWebsite?.(e)}} value={companyInfoUiValue?.vat?.website}/>
+        <div className="flex flex-col gap-0.5">
+          <div className="flex flex-row gap-0.5 items-center justify-between w-[180px]">
+            <p className="text-[9px] w-[40px]">{obj.bankDetailsVatId}</p>
+            <Input type={"text"} className={"text-[9px]"} onChange={(e)=>{changeCompanyInfoUiVatIdTxt?.(e)}} value={companyInfoUiValue?.vat?.idTxt}/>
+          </div>
+          <div className="flex flex-row gap-0.5 items-center justify-between w-[180px]">
+            <Input type={"text"} className={"text-[9px] w-[40px]"} onChange={(e)=>{changeCompanyInfoUiVatCommercialRegister?.(e)}} value={companyInfoUiValue?.vat?.commercialRegister}/>
+            <Input type={"text"} className={"text-[9px]"} onChange={(e)=>{changeCompanyInfoUiVatCommercialRegisterID?.(e)}} value={companyInfoUiValue?.vat?.commercialRegisterID}/>
+          </div>
+          <div className="flex flex-row gap-0.5 items-center justify-between w-[180px]">
+            <p className="text-[9px]">{obj.bankDetailsCourt}</p>
+            <Input type={"text"} className={"text-[9px]"} onChange={(e)=>{changeCompanyInfoUiVatLocalCourt?.(e)}} value={companyInfoUiValue?.vat?.localCourt}/>
+          </div>
+          <div className="flex flex-row gap-0.5 items-center justify-between w-[180px]">
+            <p className="text-[9px]">{obj.bankDetailsManagingDirector}</p>
+            <Input type={"text"} className={"text-[9px]"} onChange={(e)=>{changeCompanyInfoUiVatManagingDirector?.(e)}} value={companyInfoUiValue?.vat?.managingDirector}/>
+          </div>
+          <div className="flex flex-row gap-0.5 items-center justify-between w-[180px]">
+            <p className="text-[9px]">{obj.bankDetailsWebsite}</p>
+            <Input type={"text"} className={"text-[9px]"} onChange={(e)=>{changeCompanyInfoUiVatWebsite?.(e)}} value={companyInfoUiValue?.vat?.website}/>
+          </div>
 
         </div>
       </div>
