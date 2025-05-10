@@ -28,6 +28,9 @@ import {
 
 
 type Tobj = {
+
+  ShowPdfLabel:string,
+
   comboboxPlaceholder:string,
 
   selectRecieverHeaderTxt:string,
@@ -168,6 +171,17 @@ type ComboboxValues = {
   label:string
   value:string
 }
+
+type Form = {
+  sender?:ContactData
+  reciever?:ContactData
+  invoice?:InvoiceData
+  invoiceMessage?:InvoiceMessage
+  company?:CompanyInfo
+  rows?:RowData[]
+  price?:Prices
+}
+
 function page() {
   const [itemUiTotalPrice, setItemUiTotalPrice] = useState<Price>({text:"0", value:0})
   const [itemUi, setItemUi] = useState<RowData>({
@@ -186,7 +200,17 @@ function page() {
     vat:{text:"19", value:19},
     total:{text:"", value:0}
   })
-  const [rows, setRows] = useState<RowData[]>([])
+  const [rows, setRows] = useState<RowData[]>([{
+    position:0,
+    quantity:0,
+    unit:"€",
+    description:"",
+    price:0,
+    priceTxt:"0",
+    totalPrice:0,
+    totalPriceTxt:"0",
+    currency:""
+  }])
   const [companyInfoUi, setCompanyInfoUi] = useState<CompanyInfo>({
     bank:{
       name:"Commerzbank",
@@ -408,8 +432,20 @@ function page() {
       }
 
   },[rows])
+  const obj:{ShowPdfLabel:string} = {
+    ShowPdfLabel:"Datei als PDF anschauen"
+  }
+  
+  const showPDf = async () =>{
+    const form:Form = {sender:senderUi, reciever:recieverUi, invoice:invoiceUi, invoiceMessage:invoiceMessageUi, company:companyInfoUi, rows:rows, price:price }
+    const blob = await pdf(<MyDocument form={form} />).toBlob();
+    const url = URL.createObjectURL(blob);
+    window.open(url);
+};
+  
   return (
-    <div className="flex flex-row items-center justify-center">
+    <div className="flex flex-col items-center justify-center gap-1">
+      
       <PageUI 
         itemUiTotalPriceValue={itemUiTotalPrice}
         itemUiValue={itemUi}
@@ -468,6 +504,9 @@ function page() {
         deleteRow={(index:number)=>{deleteRow(index)}}
         addRow={(val:RowData)=>{addRow(val)}}
       />
+      <div className="w-[100%]">
+        <Button className="w-[100%] rounded-none cursor-pointer" onClick={showPDf}> {obj.ShowPdfLabel}</Button>
+      </div>
     </div>
   )
 }
@@ -595,6 +634,8 @@ function PageUI({
     { label:"£", value:"£" }
   ]
   const obj:Tobj = {
+    ShowPdfLabel:"Datei als PDF anschauen",
+
     comboboxPlaceholder:"Auswählen",
 
     selectRecieverHeaderTxt:  "Kunden Info",
@@ -689,7 +730,9 @@ function PageUI({
     }
   },[itemUiValue])
   return(
-    <div className={`w-[535px] h-[758px] border border-black flex flex-col`}>
+    <div className="flex flex-col ">
+
+    <div className={`w-[655px] h-[926px] border border-black flex flex-col py-2 px-8 overflow-auto scale-150 origin-top justify-between`}>
       {/* Logo Section */}
       <div className="flex flex-row w-[100%] items-center justify-end p-2">
         <Image src={Logo} alt="Logo" />
@@ -726,7 +769,7 @@ function PageUI({
       </div>
       </div>
       {/* Invoice Number Section */}
-      <div className="flex flex-col items-end pt-4 gap-0.5">
+      <div className="flex flex-col items-end gap-0.5">
         <div className="flex flex-row gap-0.5 items-center">
           <p className="text-[11px]">{obj.invoiceDate2Label}</p>
           <DatePickerWithPresets handler={(val:string)=>{changeInvoiceUiDate(val)}} label={obj.invoiceDateLabel}/>
@@ -741,8 +784,8 @@ function PageUI({
       </div>
 
       {/* Invoice Message First Part Section  */}
-      <div className="py-0.5 flex flex-col gap-1">
-        <h3 className="text-[22px]/tight pb-0">{obj.invoiceHeader}</h3>
+      <div className="flex flex-col gap-0.5">
+        <h3 className="text-[22px]/tight pb-1">{obj.invoiceHeader}</h3>
         <Input type={"text"} placeholder={obj.invoiceMessage.salutation} className={"w-[100%]"} onChange={(e)=>{changeInvoiceMessageUiSalutation?.(e)}} value={invoiceMessageUiValue?.salutation}/>  
         <textarea  placeholder={obj.invoiceMessage.firstSection} className={"w-[100%] text-[11px] px-1 border-2 border-gray-200"} onChange={(e)=>{changeInvoiceMessageUiFirstSection?.(e)}} value={invoiceMessageUiValue?.firstSection} name="Text1" rows={2}></textarea>
         {/* <Input type={"text"} placeholder={obj.invoiceMessage.firstSection} className={"w-[100%] h-8 flex flex-row items-start justify-start"} onChange={(e)=>{changeInvoiceMessageUiFirstSection?.(e)}} value={invoiceMessageUiValue?.firstSection}/> */}
@@ -763,6 +806,42 @@ function PageUI({
             </TableRow>
         </TableHeader>
         <TableBody>
+          {/* Empty Row, to Fill and Add by User */}
+          {
+            <TableRow>
+                <TableCell className="text-center" id="action">
+                    <Button size="icon" className="flex flex-col items-center justify-center hover:cursor-pointer bg-green-500 hover:bg-green-800 text-[11px] w-[100%] h-[100%]" onClick={()=>{AddRow()}}  >
+                        <AddIcon className="text-[11px] w-[100%]! h-[100%]!"/>
+                    </Button>
+                </TableCell>
+                <TableCell className="text-center" id="position">
+                  <Input placeholder="text" className="w-[100%]! h-[100%] rounded-xs text-center" value={itemUiValue?.position} onChange={(e)=>changeItemUiPosition(e)}/>
+                </TableCell>
+                <TableCell className="text-center" id="quantity">
+                  <Input placeholder="text" className="w-[100%] h-[100%] rounded-xs text-center" value={itemUiValue?.quantity} onChange={(e)=>changeItemUiQuantity(e)}/>
+                </TableCell>
+                <TableCell className="text-center" id="unit">
+                  <ComboboxPopover placeholder={obj.itemUnitLabel} className="w-[60px]" handler={(value)=>{changeItemUiUnit(value)}} values={units}  />
+                </TableCell>
+                <TableCell className="" id="description">
+                  <Input placeholder="text" className="w-[100%] h-[100%] rounded-none" value={itemUiValue?.description} onChange={(e)=>changeItemUiDescription(e)} />
+                </TableCell>
+                <TableCell className="text-center" id="price">
+                  <div className="flex flex-row gap-0.5 w-[100%]">
+                    <Input placeholder="text" className="w-[100%] h-[100%] rounded-none px-1" value={itemUiValue?.priceTxt} onChange={(e)=>changeItemUiPrice(e)}/>
+                    <ComboboxPopover placeholder={itemUiValue?.currency} className="w-[20px]" handler={(value)=>{changeItemUiCurrency(value)}} values={currencies}  />
+                  </div>
+                </TableCell>
+                <TableCell id="totalPrice">
+                  <div className="flex flex-row justify-start">
+                    {/* <Input placeholder="text" className="w-[40px] h-[100%] rounded-none px-1" value={itemUiTotalPriceValue?.text} onChange={()=>{}} /> */}
+                    {/* <ComboboxPopover placeholder={itemUiValue?.currency} className="w-[20px]" handler={(value)=>{changeItemUiCurrency(value)}} values={currencies} /> */}
+                    <p className="w-[56px] h-[100%] rounded-none text-right  " >{itemUiTotalPriceValue?.text || " "}</p>
+                    <p className="w-[20px] h-[100%] rounded-none px-1 text-left ">{itemUiValue?.currency || "€"}</p>
+                  </div>
+                </TableCell>
+            </TableRow> 
+          }
                 {rowsValue.length !== 0 &&
                     rowsValue.map((row,index)=>(
                         <TableRow key={index}>
@@ -782,46 +861,12 @@ function PageUI({
                         </TableRow>
                     ))
                 }
-                {/* Empty Row, to Fill and Add by User */}
-                {
-                  <TableRow>
-                      <TableCell className="text-center" id="action">
-                          <Button size="icon" className="flex flex-col items-center justify-center hover:cursor-pointer bg-green-500 hover:bg-green-800 text-[11px] w-[100%] h-[100%]" onClick={()=>{AddRow()}}  >
-                              <AddIcon className="text-[11px] w-[100%]! h-[100%]!"/>
-                          </Button>
-                      </TableCell>
-                      <TableCell className="text-center" id="position">
-                        <Input placeholder="text" className="w-[100%]! h-[100%] rounded-xs text-center" value={itemUiValue?.position} onChange={(e)=>changeItemUiPosition(e)}/>
-                      </TableCell>
-                      <TableCell className="text-center" id="quantity">
-                        <Input placeholder="text" className="w-[100%] h-[100%] rounded-xs text-center" value={itemUiValue?.quantity} onChange={(e)=>changeItemUiQuantity(e)}/>
-                      </TableCell>
-                      <TableCell className="text-center" id="unit">
-                        <ComboboxPopover placeholder={obj.itemUnitLabel} className="w-[60px]" handler={(value)=>{changeItemUiUnit(value)}} values={units}  />
-                      </TableCell>
-                      <TableCell className="" id="description">
-                        <Input placeholder="text" className="w-[100%] h-[100%] rounded-none" value={itemUiValue?.description} onChange={(e)=>changeItemUiDescription(e)} />
-                      </TableCell>
-                      <TableCell className="text-center" id="price">
-                        <div className="flex flex-row gap-0.5 w-[100%]">
-                          <Input placeholder="text" className="w-[100%] h-[100%] rounded-none px-1" value={itemUiValue?.priceTxt} onChange={(e)=>changeItemUiPrice(e)}/>
-                          <ComboboxPopover placeholder={obj.itemCurrencyLabel} className="w-[20px]" handler={(value)=>{changeItemUiCurrency(value)}} values={currencies}  />
-                        </div>
-                      </TableCell>
-                      <TableCell id="totalPrice">
-                        <div className="flex flex-row gap-0.5">
-                          <Input placeholder="text" className="w-[40px] h-[100%] rounded-none px-1" value={itemUiTotalPriceValue?.text} onChange={()=>{}} />
-                          <ComboboxPopover placeholder={obj.itemCurrencyLabel} className="w-[20px]" handler={(value)=>{changeItemUiCurrency(value)}} values={currencies} />
-                        </div>
-                      </TableCell>
-                  </TableRow> 
-                }
                 {/* <TableEmptyRow/> */}
                 <TableEmptyRow/>
 
-                <TablePriceRow txt={obj.tableRowNetPriceLabel} val={priceValue?.net?.text} className="border-b"/>
-                <TablePriceRow txt={obj.tableRowVATlabel} val={priceValue?.vat?.text}/>
-                <TablePriceRow txt={obj.tableRowTotalPriceLabel} val={priceValue?.total?.text} total={true}/>
+                <TablePriceRow txt={obj.tableRowNetPriceLabel} val={priceValue?.net?.text} currency={itemUiValue?.currency} className="border-b"/>
+                <TablePriceRow txt={obj.tableRowVATlabel} val={priceValue?.vat?.text} currency={itemUiValue?.currency}/>
+                <TablePriceRow txt={obj.tableRowTotalPriceLabel} val={priceValue?.total?.text} total={true} currency={itemUiValue?.currency}/>
           </TableBody>
       </Table>
       </div>
@@ -834,7 +879,7 @@ function PageUI({
         <Input type={"text"} placeholder={obj.invoiceMessage.signOff} className={"w-[100%]"} onChange={(e)=>{changeInvoiceMessageUiSignOff?.(e)}} value={invoiceMessageUiValue?.signOff}/>
       </div>
       {/* Bank Account Details Section */}
-      <div className="flex flex-row w-[100%] items-stretch justify-between">
+      <div className="flex flex-row w-[100%] items-stretch justify-between relative bottom-0">
         <div className="flex flex-col gap-0.5">
           <div className="text-[9px]">
             <Input type={"text"} className={"w-[140px] text-[9px]"} onChange={(e)=>{changeSenderUiCompany?.(e)}} value={senderUiValue?.company}/>
@@ -897,6 +942,8 @@ function PageUI({
 
         </div>
       </div>
+    </div>
+          
     </div>
   )
 }

@@ -57,7 +57,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors h-6!",
+        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors h-5!",
         className
       )}
       {...props}
@@ -70,7 +70,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "text-foreground h-6 px-2 text-left align-middle font-medium whitespace-pre-wrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "text-foreground h-5 px-2 text-left align-middle font-medium whitespace-pre-wrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className
       )}
       {...props}
@@ -117,13 +117,13 @@ function TableEmptyRow({className, fields=7}:{className?:string, fields?:number}
   )
 }
 
-function TablePriceRow({txt, val, total,className}:{txt?:string, val?:string, total?:boolean, className?:string}){
+function TablePriceRow({txt, val, total,className, currency="€"}:{txt?:string, val?:string, total?:boolean, className?:string, currency?:string}){
   return(
   <tr>
-    <td colSpan={7} className={`${total?"bg-muted":"hover:bg-muted"} transition-all duration-200 pl-4 pr-12 h-6 ${className}`}>
+    <td colSpan={7} className={`${total?"bg-muted":"hover:bg-muted"} transition-all duration-200 pl-4 pr-12 h-5 ${className}`}>
       <div className="flex justify-between">
         <span>{txt}</span>  
-        <span>{val} €</span>
+        <div className="flex gap-1"> <span>{val}</span><span>{currency}</span></div>
       </div>
     </td>
   </tr>

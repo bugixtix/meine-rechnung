@@ -1,6 +1,6 @@
 'use client'
 
-import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
 import {useState} from 'react'
 import {Input} from "@/components/ui/input"
 
@@ -17,13 +17,82 @@ const styles = StyleSheet.create({
     },
   });
 
-
+type ContactData = {
+  address?:string,
+  contactPerson?:string,
+  company?:string,
+  street?:string,
+  houseNumber?:number,
+  houseNumberTxt:string,
+  zipCode?:number,
+  zipCodeTxt?:string,
+  place?:string,
+  tel?:string,
+  email?:string,
+}
+type InvoiceData={
+  date?:string,
+  id?:number,
+  idTxt?:string,
+  dateNote?:string
+}
+type InvoiceMessage={
+  salutation?:string,
+  firstSection?:string,
+  secondSection?:string,
+  thirdSection?:string,
+  closing?:string,
+  signOff?:string
+}
+type CompanyInfo={
+  bank?:{
+    name?:string,
+    iban?:string,
+    bic?:string,
+    accountHolder?:string
+  },
+  vat?:{
+    idTxt?:string,
+    commercialRegister?:string,
+    commercialRegisterID?:string,
+    localCourt?:string,
+    managingDirector?:string,
+    website?:string
+  }
+}
+type RowData = {
+  position?:number,
+  quantity?:number,
+  unit?:string|null,
+  description?:string,
+  price?:number,
+  priceTxt?:string,
+  totalPrice?:number,
+  totalPriceTxt?:string,
+  currency?:string,
+}
+type Price = {
+  text?:string,
+  value?:number
+}
+type Prices = {
+  vat?:Price
+  net?:Price
+  total?:Price
+}
+type Form = {
+  sender?:ContactData
+  reciever?:ContactData
+  invoice?:InvoiceData
+  invoiceMessage?:InvoiceMessage
+  company?:CompanyInfo
+  rows?:RowData[]
+  price?:Prices
+}
 function MyDocument({
-    name,
-    email,
+    form,
   }: {
-    name: string;
-    email: string;
+    form?:Form
   }){
     const [txtValue, setTxtValue] = useState<string>("")
 
@@ -34,15 +103,22 @@ function MyDocument({
             setTxtValue(p=>e.target.value)
         }
   return (
-    <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.section}>
-        {/* <Text style={styles.label}>Name</Text> */}
-        <View style={styles.valueBox}><Text>{name}</Text></View>
+
+  <Document>
+    <Page size="A4" style={{ padding: 30, fontSize: 11 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
+        {/* <Image src={form.icon} style={{ width: 40, height: 40 }} /> */}
+        <Text>{form?.sender?.address}</Text>
       </View>
-      <View style={styles.section}>
-        {/* <Text style={styles.label}>Email</Text> */}
-        <View style={styles.valueBox}><Text>{email}</Text></View>
+      <Text>{form?.company?.bank?.name}</Text>
+      <View style={{ marginTop: 20 }}>
+        {/* {form?.rows?.map((r: any, i: number) => (
+          <View key={i} style={{ flexDirection: "row", borderBottom: 1 }}>
+            {r.map((cell: string, j: number) => (
+              <Text key={j} style={{ flex: 1 }}>{cell}</Text>
+            ))}
+          </View>
+        ))} */}
       </View>
     </Page>
   </Document>

@@ -36,13 +36,13 @@ export function DatePickerWithPresets({label="Pick a date", handler}:{label?:str
         <Button
           variant={"outline"}
           className={cn(
-            "text-[11px] w-[140px] p-0 justify-start text-left font-normal cursor-pointer",
+            "text-[11px] w-[140px] p-0 justify-end text-right font-normal cursor-pointer",
             !date && "text-muted-foreground"
           )}
         >
 
-          {date ? format(date, "PPP") : <span className="text-[11px]">{label}</span>}
-          <p className="text-2xl">
+          {date ? format(date, "PPP") : <span className="text-[11px] ">{label}</span>}
+          <p className="text-2xl text-right">
             <CalendarIcon className="w-[12px]! h-[12px]!" />
           </p>
         </Button>
