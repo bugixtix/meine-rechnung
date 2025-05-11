@@ -242,15 +242,15 @@ function page() {
     dateNote:"Rechnungsdatum entspricht Liefer-/Leistungsdatum"
   })
   const [recieverUi, setRecieverUi] = useState<ContactData>({
-    address:"initial",
+    address:"Musterfirma - Musterstraße 1 - 12345, Musterhausen",
     contactPerson:"Herr Mustermann",
     company:"Bambi Frischkäse",
     street:"Musterstraße",
     houseNumber:1,
     houseNumberTxt:"1",
-    zipCode:123456,
-    zipCodeTxt:"123456",
-    place:"Wangenhausen, DE",
+    zipCode:12345,
+    zipCodeTxt:"12345",
+    place:"Musterhausen",
   })
   const [senderUi, setSenderUi] = useState<ContactData>({
     address:"initial",
@@ -261,7 +261,7 @@ function page() {
     houseNumberTxt:"2",
     zipCode:654321,
     zipCodeTxt:"654321",
-    place:"Schönehausen, DE",
+    place:"Schönehausen",
     tel:"0123456789",
     email:"max.mustermann@muster.de"
   })
@@ -443,8 +443,9 @@ function page() {
     window.open(url);
 };
   
+// scale-150 origin-top
   return (
-    <div className="flex flex-col items-center justify-center gap-1">
+    <div className="flex flex-col items-center gap-1 relative min-h-fit">
       
       <PageUI 
         itemUiTotalPriceValue={itemUiTotalPrice}
@@ -504,9 +505,9 @@ function page() {
         deleteRow={(index:number)=>{deleteRow(index)}}
         addRow={(val:RowData)=>{addRow(val)}}
       />
-      <div className="w-[100%]">
-        <Button className="w-[100%] rounded-none cursor-pointer" onClick={showPDf}> {obj.ShowPdfLabel}</Button>
-      </div>
+      
+      <Button className="w-[100%] rounded-none cursor-pointer" onClick={showPDf}> {obj.ShowPdfLabel}</Button>
+      
     </div>
   )
 }
@@ -732,7 +733,7 @@ function PageUI({
   return(
     <div className="flex flex-col ">
 
-    <div className={`w-[655px] h-[926px] border border-black flex flex-col py-2 px-8 overflow-auto scale-150 origin-top justify-between`}>
+    <div className={`w-[655px] h-[926px] border border-black flex flex-col py-2 px-8 overflow-auto justify-between`}>
       {/* Logo Section */}
       <div className="flex flex-row w-[100%] items-center justify-end p-2">
         <Image src={Logo} alt="Logo" />
