@@ -104,7 +104,9 @@ function MyDocument({
     }
 
   const obj = {
-    commaSpace:", "
+    commaSpace:", ",
+    invoiceDateLabel:"Datum: ",
+    invoiceIdLabel:"Rechungungsnummer: ",
   }
   return (
 
@@ -139,6 +141,21 @@ function MyDocument({
           <Text style={{fontSize:"11pt"}}>{form?.sender?.place}</Text>
         </View>
       </View>
+
+      <View style={{display:"flex", flexDirection:"column", width:"100%", justifyContent:"flex-end", alignItems:"flex-end"}}>
+        <View style={{display:"flex", flexDirection:"row", gap:"2px", textAlign:"right"}}>
+          <Text style={{fontSize:"11pt"}}>{obj.invoiceDateLabel}</Text>
+          <Text style={{fontSize:"11pt"}}>{form?.invoice?.date}</Text>
+        </View>
+        <View style={{display:"flex", flexDirection:"row", gap:"2px", textAlign:"right"}}>
+          <Text style={{fontSize:"11pt"}}>{obj.invoiceIdLabel}</Text>
+          <Text style={{fontSize:"11pt"}}>{form?.invoice?.idTxt}{obj.commaSpace}</Text>
+        </View>
+        <View style={{display:"flex", flexDirection:"row", gap:"2px", textAlign:"right"}}>
+          <Text style={{fontSize:"9pt"}}>{form?.invoice?.dateNote}</Text>
+        </View>
+      </View>
+
 
   
       {/* <View style={{ marginTop: 20 }}>
