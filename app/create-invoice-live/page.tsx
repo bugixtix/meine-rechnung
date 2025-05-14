@@ -228,7 +228,7 @@ function page() {
     }
   })
   const [invoiceMessageUi, setInvoiceMessageUi] = useState<InvoiceMessage>({
-    salutation:"Sehr geehrter Herr Schmidt",
+    salutation:"Sehr geehrter Herr Schmidt,",
     firstSection:"vielen Dank, für Ihren Auftrag. Vereinbarungsgemäß berechnen wir Ihnen hiermit folgende Leistungen:",
     secondSection:"Bitte überwiesen Sie den Rechnungsbetrag innerhalb von 14 Tagen auf unser unten genanntes Konto.",
     thirdSection:"Für weitere Fragen stehen wir Ihnen sehr gerne zur Verfügung.",

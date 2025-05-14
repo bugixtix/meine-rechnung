@@ -107,6 +107,7 @@ function MyDocument({
     commaSpace:", ",
     invoiceDateLabel:"Datum: ",
     invoiceIdLabel:"Rechungungsnummer: ",
+    invoiceLabel:"Rechnung"
   }
   return (
 
@@ -149,24 +150,46 @@ function MyDocument({
         </View>
         <View style={{display:"flex", flexDirection:"row", gap:"2px", textAlign:"right"}}>
           <Text style={{fontSize:"11pt"}}>{obj.invoiceIdLabel}</Text>
-          <Text style={{fontSize:"11pt"}}>{form?.invoice?.idTxt}{obj.commaSpace}</Text>
+          <Text style={{fontSize:"11pt"}}>{form?.invoice?.idTxt}</Text>
         </View>
         <View style={{display:"flex", flexDirection:"row", gap:"2px", textAlign:"right"}}>
           <Text style={{fontSize:"9pt"}}>{form?.invoice?.dateNote}</Text>
         </View>
       </View>
 
+      <View style={{display:"flex", flexDirection:"column", width:"100%", justifyContent:"flex-start", alignItems:"flex-start", paddingTop:"4px"}}>
+        <View style={{display:"flex", flexDirection:"row", gap:"2px", textAlign:"left"}}>
+          <Text style={{fontSize:"22pt", padding:"4px 0px"}}>{obj.invoiceLabel}</Text>
+        </View>
+        <View style={{display:"flex", flexDirection:"column", gap:"2px", textAlign:"left"}}>
+          <Text style={{fontSize:"11pt"}}>{form?.invoiceMessage?.salutation}</Text>
+          <Text style={{fontSize:"11pt"}}>{form?.invoiceMessage?.firstSection}</Text>
+        </View>
+      </View>
 
-  
-      {/* <View style={{ marginTop: 20 }}>
-        {form?.rows?.map((r: any, i: number) => (
-          <View key={i} style={{ flexDirection: "row", borderBottom: 1 }}>
-            {r.map((cell: string, j: number) => (
-              <Text key={j} style={{ flex: 1 }}>{cell}</Text>
-            ))}
+
+      <View style={{ marginTop: 20, borderTop: 1, borderBottom: 1 }}>
+        <View style={{ flexDirection: "row", backgroundColor: "#f0f0f0", padding: 4 }}>
+          {["Pos", "Menge", "Einheit", "Beschreibung", "Einzelpreis", "Gesamt", "Währung"].map((h, i) => (
+            <Text key={i} style={{ flex: 1, fontWeight: "bold" }}>{h}</Text>
+          ))}
+        </View>
+        {form?.rows?.map((item: any, i: number) => (
+          <View key={i} style={{ flexDirection: "row", padding: 4, borderBottom: 0.5 }}>
+            <Text style={{ flex: 1 }}>{item?.position}</Text>
+            <Text style={{ flex: 1 }}>{item?.quantity}</Text>
+            <Text style={{ flex: 1 }}>{item?.unit}</Text>
+            <Text style={{ flex: 1 }}>{item?.description}</Text>
+            <Text style={{ flex: 1 }}>{item?.price.toFixed(2)}</Text>
+            <Text style={{ flex: 1 }}>{item?.totalPrice.toFixed(2)}</Text>
+            <Text style={{ flex: 1 }}>{item?.currency}</Text>
           </View>
         ))}
-      </View> */}
+      </View>
+      
+
+
+  
     </Page>
   </Document>
   )
