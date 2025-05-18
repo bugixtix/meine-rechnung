@@ -187,7 +187,15 @@ function MyDocument({
         ))}
       </View>
       
-
+      <View style={{display:"flex", flexDirection:"column", width:"100%", justifyContent:"flex-start", alignItems:"flex-start", paddingTop:"4px"}}>
+        <View style={{display:"flex", flexDirection:"row", gap:"2px", textAlign:"left"}}>
+          <Text style={{fontSize:"22pt", padding:"4px 0px"}}>{obj.invoiceLabel}</Text>
+        </View>
+        <View style={{display:"flex", flexDirection:"column", gap:"2px", textAlign:"left"}}>
+          <Text style={{fontSize:"11pt"}}>{form?.invoiceMessage?.salutation}</Text>
+          <Text style={{fontSize:"11pt"}}>{form?.invoiceMessage?.firstSection}</Text>
+        </View>
+      </View>
 
   
     </Page>
